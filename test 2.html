@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secret Entrance</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    body, h2, h3, p, button {
+    font-family: 'Press Start 2P', cursive; /* Apply pixel font */
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    #secret-content {
+      display: none; /* Initially hidden */
+      text-align: center;
+    }
+    #locked-screen {
+      text-align: center;
+    }
+    .key-box {
+      display: inline-block;
+      padding: 15px 20px;
+      margin: 5px;
+      font-size: 20px;
+      font-weight: bold;
+      background: gray;
+      color: white;
+      border-radius: 5px;
+      opacity: 0.5;
+      transition: opacity 0.3s, background 0.3s;
+    }
+    .key-box.active {
+      opacity: 1;
+      background: #00ff00; /* Green when pressed */
+      color: black;
+    }
+    #start-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #start-button:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div id="locked-screen">
+    <h3>Enter the Konami Code or click "Start" to enter.</h3>
+    <button id="start-button">Start</button>
+  </div>
+
+  <div id="secret-content">
+    <h2>Welcome!</h2>
+  </div>
+
+  <script>
+    // Updated secret code array in all lowercase.
+    const konamiCode = ["arrowup", "arrowup", "arrowdown", "arrowdown", "arrowleft", "arrowright", "arrowleft", "arrowright", "b", "a"];
+    let userInput = [];
+    let keyBoxes = document.querySelectorAll('.key-box');
+    let errorMessage = document.getElementById("error-message");
+    let startButton = document.getElementById("start-button");
+
+    document.addEventListener("keydown", function(event) {
+      let key = event.key.toLowerCase(); // Now both input and code are lowercase
+      userInput.push(key);
+
+      // Keep only the last few inputs (length of the secret code)
+      if (userInput.length > konamiCode.length) {
+        userInput.shift();
+      }
+
+      // Highlight keys pressed
+      keyBoxes.forEach((box, index) => {
+        if (index < userInput.length) {
+          if (userInput[index] === konamiCode[index]) {
+            box.classList.add("active");
+          } else {
+            box.classList.remove("active");
+          }
+        } else {
+          box.classList.remove("active");
+        }
+      });
+
+      // Check if the sequence is correct step-by-step
+      for (let i = 0; i < userInput.length; i++) {
+        if (userInput[i] !== konamiCode[i]) {
+          errorMessage.style.display = "block";
+          setTimeout(resetInput, 1000);
+          return;
+        }
+      }
+
+      // If the full code is entered correctly, unlock the page
+      if (userInput.length === konamiCode.length) {
+        unlockPage();
+      }
+    });
+
+    // Function to unlock the page
+    function unlockPage() {
+      document.getElementById("locked-screen").style.display = "none";
+      document.getElementById("secret-content").style.display = "block";
+    }
+
+    // Reset input when incorrect
+    function resetInput() {
+      userInput = [];
+      keyBoxes.forEach(box => box.classList.remove("active"));
+      errorMessage.style.display = "none";
+    }
+
+    // Start button bypasses the password and unlocks the page
+    startButton.addEventListener("click", function() {
+      unlockPage();
+    });
+  </script>
+</body>
+</html>
